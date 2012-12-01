@@ -3,6 +3,9 @@ package com.puzzle.puzlive;
 import java.util.ArrayList;
 import java.util.Random;
 import android.hardware.Camera;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -13,7 +16,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 public class ImagenCamara extends SurfaceView implements
-		SurfaceHolder.Callback, Camera.PreviewCallback {
+		SurfaceHolder.Callback, Camera.PreviewCallback, SensorEventListener {
 
 	private Camera camera;
 	private int width;
@@ -22,6 +25,7 @@ public class ImagenCamara extends SurfaceView implements
 	private int divy, divx;
 	boolean bandera = false;
 	private int posiciones[];
+	long Tinicio, Tfinal;
 
 	public ImagenCamara(Context context, int divx, int divy) {
 
@@ -34,13 +38,14 @@ public class ImagenCamara extends SurfaceView implements
 
 	}
 
-	public void surfaceCreated(SurfaceHolder holder) {
+	public void surfaceCreated(SurfaceHolder holder, SensorEvent event) {
 		camera = Camera.open();
 		try {
 			camera.setPreviewCallback(this);
 		} catch (Exception e) {
 			android.util.Log.e("", e.getMessage());
 		}
+		Tinicio = event.timestamp;
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
@@ -59,10 +64,12 @@ public class ImagenCamara extends SurfaceView implements
 		camera.startPreview();
 	}
 
-	public void surfaceDestroyed(SurfaceHolder holder) {
+	public void surfaceDestroyed(SurfaceHolder holder, SensorEvent event) {
 		camera.setPreviewCallback(null);
 		camera.stopPreview();
 		camera.release();
+		Tfinal = event.timestamp - this.Tinicio;
+		
 	}
 
 	public void onPreviewFrame(final byte[] data, Camera camera) {
@@ -343,5 +350,29 @@ public class ImagenCamara extends SurfaceView implements
 
 		}
 		return valor;
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor arg0, int arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void surfaceCreated(SurfaceHolder arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
